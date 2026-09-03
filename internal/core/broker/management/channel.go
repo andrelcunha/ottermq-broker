@@ -2,6 +2,7 @@ package management
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/ottermq/ottermq/internal/core/models"
 	"github.com/ottermq/ottermq/pkg/metrics"
@@ -27,7 +28,7 @@ func (s *Service) ListChannels(vhost string) ([]models.ChannelDetailDTO, error) 
 		chDTO := mapChannelSnapshotToDTO(chanSnapshot)
 		channels = append(channels, chDTO)
 	}
-
+	slices.SortStableFunc(channels, sortChannels)
 	return channels, nil
 }
 
@@ -82,3 +83,9 @@ func (s *Service) GetChannel(connectionName string, channelNumber uint16) (*mode
 	chDTO := mapChannelSnapshotToDTO(chanSnapshot)
 	return &chDTO, nil
 }
+
+var sortChannels = compareBy(
+	key(func(d models.ChannelDetailDTO) string { return d.VHost }),
+	key(func(d models.ChannelDetailDTO) string { return d.ConnectionName }),
+	key(func(d models.ChannelDetailDTO) uint16 { return d.Number }),
+)

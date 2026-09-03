@@ -1,7 +1,6 @@
 package management
 
 import (
-	"cmp"
 	"fmt"
 	"slices"
 
@@ -21,15 +20,8 @@ func (s *Service) ListQueues() []models.QueueDTO {
 			dtos = append(dtos, dto)
 		}
 	}
-	slices.SortFunc(dtos, sortFunc)
+	slices.SortStableFunc(dtos, sortQueues)
 	return dtos
-}
-
-func sortFunc(a, b models.QueueDTO) int {
-	if c := cmp.Compare(a.VHost, b.VHost); c != 0 {
-		return c
-	}
-	return cmp.Compare(a.Name, b.Name)
 }
 
 type QueueStats struct {
@@ -287,3 +279,8 @@ func toUint8Pointer(val any) *uint8 {
 	}
 	return nil
 }
+
+var sortQueues = compareBy(
+	key(func(d models.QueueDTO) string { return d.VHost }),
+	key(func(d models.QueueDTO) string { return d.Name }),
+)
