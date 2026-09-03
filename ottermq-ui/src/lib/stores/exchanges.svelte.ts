@@ -4,15 +4,15 @@ export interface ExchangeData {
     "name": string,
     "type": string,
     "durable": boolean,
-    "auto_delete": false,
-    "internal": false
+    "auto_delete": boolean,
+    "internal": boolean
 }
 
-export async function getConnections(): Promise<ExchangeData[] | null> {
+export async function getExchanges(): Promise<ExchangeData[] | null> {
     try {
         const response = await api.get('/api/exchanges')
         const data = await response.json();
-        return Array.isArray(data?.ex) ? data.connections : null;
+        return Array.isArray(data?.exchanges) ? data.exchanges : null;
     } catch (err) {
         console.error('Failed to fetch: ', err)
     }
