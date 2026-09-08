@@ -17,7 +17,16 @@ export async function apiFetch(
     });
 
     if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        let message = `API error: ${response.status}`;
+        try {
+            const data = await response.json()
+            if (data?.error) {
+                message = data.error;
+            }
+        } catch {
+            // body wasn't JSON (or was empty) -- keep the generic message
+        }
+        throw new Error(message)
     }
 
     return response;
